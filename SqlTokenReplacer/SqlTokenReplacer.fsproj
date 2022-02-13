@@ -2,13 +2,16 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
     <ItemGroup>
         <Compile Include="Types.fs" />
+        <Compile Include="Utils.fs" />
         <Compile Include="Input.fs" />
+        <Compile Include="CommandTokens.fs" />
+        <Compile Include="InterpretTokens.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 
