@@ -1,11 +1,12 @@
 module SqlTokenReplacer.Input
 
 open System.IO
+open SqlTokenReplacer.Utils
 open SqlTokenReplacer.Types
 
 
 
-let private getSqlFile (filePath: string) : Result<SqlFile, string> =
+let private getFile (filePath: string) : Result<FileInfo, string> =
     let filePath = Path.GetFullPath filePath
     let fileName = Path.GetFileName filePath
 
@@ -14,27 +15,24 @@ let private getSqlFile (filePath: string) : Result<SqlFile, string> =
         <| { Content = (File.ReadAllLines filePath)
              FileName = fileName }
     with
-    | :? System.Exception as ex -> Error $"Problem reading SQL file: {ex}"
-    
-let rec private reduceResults (results: Result<'a, 'b>[]): Result<'a[], 'b> =
-    match results with
-        result when result.Length = 1 -> 
-           
-let  getSqlFiles (directoryPath: string) : Result<SqlFile [], string> =
-    let ioResult =
+    | :? System.Exception as _-> Error $"Problem reading file at path: {filePath}"
+
+
+
+let getFilesFrom (directoryPath: string) : Result<FileInfo list, string> =
+    let ioResults =
         try
+            Ok(
                 Directory.GetFiles
                 <| Path.GetFullPath directoryPath
-                |> Array. getSqlFile
+            )
         with
-        | :? System.Exception as ex -> Error $"Problem reading Sql directory: {ex}"
+        | :? System.Exception as _ -> Error $"Problem reading directory at: {directoryPath}"
 
-    let showme =
-        match ioResult with
-        | Ok result -> result |> Array.map getSqlFile
-        | Error err -> [|Error err|] 
-
-    
-    Ok [| { Content = [| "content" |]
-            FileName = "" } |]
-
+    match ioResults with
+    | Ok result ->
+        result
+        |> Array.map (fun x -> getFile x)
+        |> Array.toList
+    | Error err -> [ (Error err) ]
+    |> collectResults
