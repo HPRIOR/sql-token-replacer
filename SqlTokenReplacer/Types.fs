@@ -1,7 +1,7 @@
 module SqlTokenReplacer.Types
 
 
-type SqlFile =
+type FileInfo =
     { FileName: string
       Content: string [] }
 
@@ -12,8 +12,9 @@ type Command =
     | WhereList
     | WhereZip
 
+
 type CmdInfo =
     { CmdStr: string
-      Args: string []
+      Args: string list
       CmdType: Command
-      Variables: Map<string, string []> }
+      Variables: FileInfo list }
