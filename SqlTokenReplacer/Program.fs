@@ -1,13 +1,14 @@
-// Learn more about F# at http://docs.microsoft.com/dotnet/fsharp
-
-open System
-
-// Define a function to construct a message to print
-let from whom =
-    sprintf "from %s" whom
+open SqlTokenReplacer.Input
 
 [<EntryPoint>]
 let main argv =
-    let message = from "F#" // Call the function
-    printfn "Hello world %s" message
+    let sqlFileResults = getFilesFrom "path"
+    
+    match sqlFileResults with
+    | Ok _ -> printf "Ok!"
+    | Error _ ->
+        eprintf $"Error reading path sql files"
+        exit 1
+    |> ignore
+    
     0 // return an integer exit code
