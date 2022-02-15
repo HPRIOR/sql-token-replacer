@@ -36,12 +36,10 @@ let getVariableArgs (cmdStr: string) (variables: FileInfo list) : FileInfo list 
             |> Array.exists (fun s -> s = v.FileName))
 
 
-// use regex here
 let checkCommandSyntax cmdStr : bool =
     Regex.IsMatch(cmdStr, "[A-Za-z0-9]+(,\s*[A-Za-z0-9]+)*\[[A-Za-z0-9]+\([A-Za-z0-9]*(,\s*[A-Za-z0-9]+)*\)\]")
 
 
-// TODO check that correct number of args and variables for command
 let interpretToken (variables: FileInfo list) (token: string) : Result<CmdInfo, string> =
     if (checkCommandSyntax token) then
         Error $"Syntax error in token: {token}"
