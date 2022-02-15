@@ -1,5 +1,6 @@
 module SqlTokenReplacer.InterpretTokens
 
+open System.Text.RegularExpressions
 open SqlTokenReplacer.Types
 open SqlTokenReplacer.Utils
 
@@ -7,7 +8,19 @@ let getCmdType cmdStr : Option<Command> = failwith ""
 
 let getCmdArgs cmdStr : string list = failwith ""
 
-let getVariableArgs cmdStr : FileInfo list = failwith ""
+
+let getVariableArgs (cmdStr: string) (variables: FileInfo list) : FileInfo list =
+    let variablesFromCmdStr =
+        cmdStr.Trim('#').Split('[').[0].Split(',')
+
+    variables
+    |> List.where
+        (fun v ->
+            variablesFromCmdStr
+            |> Array.exists (fun s -> s.Contains(v.FileName)))
+
+
+
 
 // use regex here
 let checkCommandSyntax cmdStr : bool = failwith ""
