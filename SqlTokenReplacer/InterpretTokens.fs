@@ -33,15 +33,15 @@ let interpretToken (variables: FileInfo list) (token: string) : Result<CmdInfo, 
     else
         let cmdType = getCmdType token
 
-    match cmdType with
-    | None -> Error $"Command in {token} not recognised"
-    | Some cmd ->
-        Ok(
-            { CmdStr = token
-              Args = getCmdArgs token
-              CmdType = cmd
-              Variables = getVariableArgs token }
-        )
+        match cmdType with
+        | None -> Error $"Command in {token} not recognised"
+        | Some cmd ->
+            Ok(
+                { CmdStr = token
+                  Args = getCmdArgs token
+                  CmdType = cmd
+                  Variables = getVariableArgs token variables }
+            )
 
 
 
