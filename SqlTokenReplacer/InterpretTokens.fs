@@ -23,11 +23,15 @@ let getVariableArgs (cmdStr: string) (variables: FileInfo list) : FileInfo list 
 
 
 // use regex here
-let checkCommandSyntax cmdStr : bool = failwith ""
+let checkCommandSyntax cmdStr : bool =
+    Regex.IsMatch(cmdStr, "#[A-Za-z0-9]+(,\s*[A-Za-z0-9]+)*\[[A-Za-z0-9]+\([A-Za-z0-9]+(,\s*[A-Za-z0-9]+)*\)#")
 
 
 let interpretToken (variables: FileInfo list) (token: string) : Result<CmdInfo, string> =
-    let cmdType = getCmdType token
+    if (checkCommandSyntax token) then
+        Error $"Syntax error in token: {token}"
+    else
+        let cmdType = getCmdType token
 
     match cmdType with
     | None -> Error $"Command in {token} not recognised"
