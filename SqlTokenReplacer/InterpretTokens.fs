@@ -42,7 +42,7 @@ let checkCommandSyntax cmdStr : bool =
 
 let interpretToken (variables: FileInfo list) (token: string) : Result<CmdInfo, string> =
     if (checkCommandSyntax token) then
-        Error $"Syntax error in token: {token}"
+        Error $"Syntax error in token: {token}.\nMust be in the form of: #variable[command(args)]#"
     else
         let cmdType = getCmdType token
 
