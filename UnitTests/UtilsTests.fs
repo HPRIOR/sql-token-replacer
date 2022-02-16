@@ -35,3 +35,30 @@ let ZipResult_WillZip () =
     let expected = ([ 1; 2; 3 ], [ "1"; "2"; "3" ])
 
     Assert.That(result, Is.EqualTo expected)
+
+[<Test>]
+let ZipResult_WillReturnEmptyErrorArray () =
+    let input = [ Ok 1; Ok 2; Ok 3 ]
+
+    let result = zipResults input
+    let expected = ([ 1; 2; 3 ], [])
+
+    Assert.That(result, Is.EqualTo expected)
+
+[<Test>]
+let ZipResult_WillReturnEmptyOkArray () =
+    let input = [ Error 1; Error 2; Error 3 ]
+
+    let result = zipResults input
+    let expected = ([], [ 1; 2; 3 ])
+
+    Assert.That(result, Is.EqualTo expected)
+
+[<Test>]
+let ZipResult_WillReturnBothEmpty_OnEmptyInput () =
+    let input = []
+
+    let result = zipResults input
+    let expected = ([], [])
+
+    Assert.That(result, Is.EqualTo expected)
