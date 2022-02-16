@@ -59,8 +59,12 @@ let removeBlankChars (input: string list) : string list =
 let removeDuplicates (input: string list) : string list = Set(input) |> Set.toList
 
 let getCommandTokensFrom (sqlFiles: FileInfo list) : Result<string list, string> =
+    let filterStrings =
+        removeDuplicates
+        >> removeDuplicates
+        >> removeNewLines
+
     sqlFiles
     |> getListOfSqlContent
     |> tryGetTokensFromContent
-    |> Result.map removeBlankChars
-    |> Result.map removeDuplicates
+    |> Result.map filterStrings
