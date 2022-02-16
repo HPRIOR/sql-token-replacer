@@ -19,3 +19,5 @@ type CmdInfo =
       CmdType: Command
       Variables: FileInfo list
       Type: string }
+
+type CommandFunc = FileInfo list -> FileInfo list
