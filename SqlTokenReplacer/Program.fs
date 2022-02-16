@@ -1,14 +1,65 @@
+open System.IO
+open SqlTokenReplacer.CommandTokens
 open SqlTokenReplacer.Input
+open SqlTokenReplacer.InterpretTokens
+open SqlTokenReplacer.GenerateCommands
+open SqlTokenReplacer.Output
+open SqlTokenReplacer.Types
+
+let extractResultOrFail result =
+    match result with
+    | Ok result -> result
+    | Error e ->
+        eprintf $"{e}"
+        exit 1
+
+
+let removeFileExtensions (fileInfo: FileInfo) =
+    let newFileName =
+        Path.GetFileNameWithoutExtension fileInfo.FileName
+
+    { fileInfo with FileName = newFileName }
+
+
 
 [<EntryPoint>]
-let main argv =
-    let sqlFileResults = getFilesFrom "path"
-    
-    match sqlFileResults with
-    | Ok _ -> printf "Ok!"
-    | Error _ ->
-        eprintf $"Error reading path sql files"
+let main _ =
+    let sqlFiles =
+        extractResultOrFail (getFilesFrom "/Users/harry.prior/Volume/test/SqlFiles")
+
+    let variableFiles =
+        extractResultOrFail (getFilesFrom "/Users/harry.prior/Volume/test/Variables")
+        |> List.map removeFileExtensions
+
+    let outputDirectory = "/Users/harry.prior/Volume/test-output/"
+    let saveName = "test1"
+
+    let initTokens =
+        extractResultOrFail (getCommandTokensFrom sqlFiles)
+
+    let cmdInfoList, tokenErrors =
+        interpretTokens initTokens variableFiles
+
+    tokenErrors
+    |> List.iter (fun x -> eprintf $"{x}\n")
+
+    if (cmdInfoList.Length = 0) then
+        eprintf "No valid tokens found"
         exit 1
-    |> ignore
+
+    let replaceTokens: CommandFunc =
+        generateCommands cmdInfoList
+        |> List.reduce (fun x y -> x >> y)
+
+    let resultFiles = replaceTokens sqlFiles
     
-    0 // return an integer exit code
+    let outputDirectory = Path.Join([outputDirectory; saveName] |> List.toArray)
+    let saveResult = saveFiles resultFiles outputDirectory  
+    
+    match saveResult with
+    | Ok _ ->
+        printf $"Results saved to: {outputDirectory}"
+        exit 0
+    | Error e ->
+        eprintf $"Error saving files: {e}"
+        exit 1
