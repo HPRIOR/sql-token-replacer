@@ -36,5 +36,5 @@ let getEnvironmentVars: Result<Map<string, string>, string> =
       "SAVEAS" ]
     |> List.map getVariable
     |> collectResults
-    |> Result.map (fun x -> Map.ofList x)
+    |> Result.map Map.ofList
     |> Result.bind checkEnvironmentVars
