@@ -17,4 +17,5 @@ type CmdInfo =
     { CmdStr: string
       Args: string list
       CmdType: Command
-      Variables: FileInfo list }
+      Variables: FileInfo list
+      Type: string }

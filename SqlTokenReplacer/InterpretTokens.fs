@@ -35,9 +35,15 @@ let getVariableArgs (cmdStr: string) (variables: FileInfo list) : FileInfo list 
             variablesFromCmdStr
             |> Array.exists (fun s -> s = v.FileName))
 
+let getType (token: string) : string = token |> getBetween '<' '>'
 
-let checkCommandSyntax cmdStr : bool =
-    Regex.IsMatch(cmdStr, "[A-Za-z0-9]+(,\s*[A-Za-z0-9]+)*\[[A-Za-z0-9]+\([A-Za-z0-9]*(,\s*[A-Za-z0-9]+)*\)\]")
+
+let commandSyntaxIsOk cmdStr : bool =
+    Regex.IsMatch(
+        cmdStr,
+        "^#[A-Za-z0-9]+(,\s*[A-Za-z0-9]+)*\[[A-Za-z0-9]+\([A-Za-z0-9]*(,\s*[A-Za-z0-9]+)*\)\]<[A-Za-z0-9]*>#$"
+    )
+    
 
 
 let interpretToken (variables: FileInfo list) (token: string) : Result<CmdInfo, string> =
@@ -53,7 +59,8 @@ let interpretToken (variables: FileInfo list) (token: string) : Result<CmdInfo, 
                 { CmdStr = token
                   Args = getCmdArgs token
                   CmdType = cmd
-                  Variables = getVariableArgs token variables }
+                  Variables = getVariableArgs token variables
+                  Type = getType token }
             )
 
 
