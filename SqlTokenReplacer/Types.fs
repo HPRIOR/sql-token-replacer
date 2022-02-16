@@ -10,7 +10,7 @@ type Command =
     | List
     | Single
     | WhereList
-    | WhereZip
+    | FlexZip
 
 
 type CmdInfo =

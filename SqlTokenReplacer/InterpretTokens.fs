@@ -12,7 +12,7 @@ let getCmdType (cmdStr: string) : Option<Command> =
     | "List" -> Some List
     | "Single" -> Some Single
     | "WhereList" -> Some WhereList
-    | "WhereZip" -> Some WhereZip
+    | "FlexZip" -> Some FlexZip
     | _ -> None
 
 
