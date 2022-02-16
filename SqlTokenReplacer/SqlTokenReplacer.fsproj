@@ -12,6 +12,8 @@
         <Compile Include="Input.fs" />
         <Compile Include="CommandTokens.fs" />
         <Compile Include="InterpretTokens.fs" />
+        <Compile Include="GenerateCommands.fs" />
+        <Compile Include="Output.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 
