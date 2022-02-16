@@ -9,6 +9,7 @@
     <ItemGroup>
         <Compile Include="Types.fs" />
         <Compile Include="Utils.fs" />
+        <Compile Include="EnvironmentVars.fs" />
         <Compile Include="Input.fs" />
         <Compile Include="CommandTokens.fs" />
         <Compile Include="InterpretTokens.fs" />

@@ -5,6 +5,7 @@ open SqlTokenReplacer.InterpretTokens
 open SqlTokenReplacer.GenerateCommands
 open SqlTokenReplacer.Output
 open SqlTokenReplacer.Types
+open SqlTokenReplacer.EnvironmentVars
 
 let extractResultOrFail result =
     match result with
@@ -24,15 +25,23 @@ let removeFileExtensions (fileInfo: FileInfo) =
 
 [<EntryPoint>]
 let main _ =
+    let envVar =
+        match getEnvironmentVars with
+        | Ok vars -> vars
+        | Error e ->
+            eprintf $"{e}"
+            exit 1
+    
+    
     let sqlFiles =
-        extractResultOrFail (getFilesFrom "/Users/harry.prior/Volume/test/SqlFiles")
+        extractResultOrFail (getFilesFrom envVar["MODIFY"])
 
     let variableFiles =
-        extractResultOrFail (getFilesFrom "/Users/harry.prior/Volume/test/Variables")
+        extractResultOrFail (getFilesFrom envVar["VARIABLES"])
         |> List.map removeFileExtensions
 
-    let outputDirectory = "/Users/harry.prior/Volume/test-output/"
-    let saveName = "test1"
+    let outputDirectory = envVar["OUTPUTTO"]
+    let saveName = envVar["SAVEAS"]
 
     let initTokens =
         extractResultOrFail (getCommandTokensFrom sqlFiles)
