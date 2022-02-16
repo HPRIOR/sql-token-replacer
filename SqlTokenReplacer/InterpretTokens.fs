@@ -4,8 +4,16 @@ open System.Text.RegularExpressions
 open SqlTokenReplacer.Types
 open SqlTokenReplacer.Utils
 
-let getCmdType (cmdStr: string) : Option<Command> =
-    let cmd = cmdStr.Split('[').[1].Split('(').[0]
+
+// TODO account for mismatch in token variables and found file variables
+// e.g. var1.txt, var2.txt in Variable dir, but token references var3
+// token should be invalid
+
+let getBetween (charOne: char) (charTwo: char) (str: string) =
+    str.Split(charOne).[1].Split(charTwo).[0]
+
+let getCmdType (token: string) : Option<Command> =
+    let cmd = token.Split('[').[1].Split('(').[0]
 
     match cmd with
     | "All" -> Some All
@@ -16,11 +24,8 @@ let getCmdType (cmdStr: string) : Option<Command> =
     | _ -> None
 
 
-let getCmdArgs (cmdStr: string) : string list =
-    cmdStr.Trim('#').Split('(').[1]
-        .TrimEnd(']')
-        .TrimEnd(')')
-        .Split(',')
+let getCmdArgs (token: string) : string list =
+    (token |> getBetween '(' ')').Split(',')
     |> Array.where (fun x -> x.Length > 0)
     |> Array.toList
 
