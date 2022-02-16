@@ -58,6 +58,9 @@ let removeBlankChars (input: string list) : string list =
 
 let removeDuplicates (input: string list) : string list = Set(input) |> Set.toList
 
+let removeNewLines (input: string list) : string list =
+    input |> List.map (fun x -> x.Replace("\\n", ""))
+
 let getCommandTokensFrom (sqlFiles: FileInfo list) : Result<string list, string> =
     let filterStrings =
         removeDuplicates
