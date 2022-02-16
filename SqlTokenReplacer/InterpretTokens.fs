@@ -30,15 +30,16 @@ let getCmdArgs (token: string) : string list =
     |> Array.toList
 
 
-let getVariableArgs (cmdStr: string) (variables: FileInfo list) : FileInfo list =
+let getVariableArgs (token: string) (variables: FileInfo list) : FileInfo list =
     let variablesFromCmdStr =
-        cmdStr.Trim('#').Split('[').[0].Split(',')
+        token.Trim('#').Split('[').[0].Split(',')
 
     variables
     |> List.where
-        (fun v ->
+        (fun variable ->
             variablesFromCmdStr
-            |> Array.exists (fun s -> s = v.FileName))
+            |> Array.exists (fun s -> s = variable.FileName))
+
 
 let getType (token: string) : string = token |> getBetween '<' '>'
 
@@ -52,7 +53,7 @@ let commandSyntaxIsOk cmdStr : bool =
 
 
 let interpretToken (variables: FileInfo list) (token: string) : Result<CmdInfo, string> =
-    if (checkCommandSyntax token) then
+    if not (commandSyntaxIsOk token) then
         Error $"Syntax error in token: {token}.\nMust be in the form of: #variable[command(args)]#"
     else
         let cmdType = getCmdType token
