@@ -6,6 +6,7 @@ open SqlTokenReplacer.Types
 
 
 
+// TODO return error if no files returned
 let private getFile (filePath: string) : Result<FileInfo, string> =
     let filePath = Path.GetFullPath filePath
     let fileName = Path.GetFileName filePath
