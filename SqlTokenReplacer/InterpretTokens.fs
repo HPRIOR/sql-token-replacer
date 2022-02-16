@@ -4,11 +4,6 @@ open System.Text.RegularExpressions
 open SqlTokenReplacer.Types
 open SqlTokenReplacer.Utils
 
-
-// TODO account for mismatch in token variables and found file variables
-// e.g. var1.txt, var2.txt in Variable dir, but token references var3
-// token should be invalid
-
 let getBetween (charOne: char) (charTwo: char) (str: string) =
     str.Split(charOne).[1].Split(charTwo).[0]
 
@@ -30,28 +25,46 @@ let getCmdArgs (token: string) : string list =
     |> Array.toList
 
 
-let getVariableArgs (token: string) (variables: FileInfo list) : FileInfo list =
-    let variablesFromCmdStr =
+let getVariableArgs (token: string) (variables: FileInfo list) : Result<FileInfo list, string> =
+    let varsFromCmdStr =
         token.Trim('#').Split('[').[0].Split(',')
 
-    variables
-    |> List.where
-        (fun variable ->
-            variablesFromCmdStr
-            |> Array.exists (fun s -> s = variable.FileName))
+    let matchedVars =
+        variables
+        |> List.where
+            (fun variable ->
+                varsFromCmdStr
+                |> Array.exists (fun s -> s = variable.FileName))
 
+    if (matchedVars.Length <> varsFromCmdStr.Length) then
+        let cmdStrVarsStr =
+            varsFromCmdStr
+            |> Array.reduce (fun x y -> $"{x}, {y}")
+
+        let matchedVarsStr =
+            match matchedVars with
+            | [] -> ""
+            | _ ->
+                matchedVars
+                |> List.map (fun x -> x.FileName)
+                |> List.reduce (fun x y -> $"{x}, {y}")
+
+        Error $"Variable arguments not satisfied. Needed {cmdStrVarsStr}, but found: {matchedVarsStr}"
+    else
+        Ok matchedVars
 
 let getType (token: string) : string = token |> getBetween '<' '>'
-
 
 let commandSyntaxIsOk cmdStr : bool =
     Regex.IsMatch(
         cmdStr,
         "^#[A-Za-z0-9]+(,\s*[A-Za-z0-9]+)*\[[A-Za-z0-9]+\([A-Za-z0-9]*(,\s*[A-Za-z0-9]+)*\)\]<[A-Za-z0-9]*>#$"
     )
-    
 
-
+(*
+To avoid lost of nested match cases, each 'get' function could return a new Result<Cmdinfo, string> or just CmdInfo.
+These could be chained together with bind and map, but would be less efficient 
+*)
 let interpretToken (variables: FileInfo list) (token: string) : Result<CmdInfo, string> =
     if not (commandSyntaxIsOk token) then
         Error $"Syntax error in token: {token}.\nMust be in the form of: #variable[command(args)]#"
@@ -60,14 +73,19 @@ let interpretToken (variables: FileInfo list) (token: string) : Result<CmdInfo, 
 
         match cmdType with
         | None -> Error $"Command in {token} not recognised"
-        | Some cmd ->
-            Ok(
-                { CmdStr = token
-                  Args = getCmdArgs token
-                  CmdType = cmd
-                  Variables = getVariableArgs token variables
-                  Type = getType token }
-            )
+        | Some cmdType ->
+            let varArgs = getVariableArgs token variables
+
+            match varArgs with
+            | Ok args ->
+                Ok(
+                    { CmdStr = token
+                      Args = getCmdArgs token
+                      CmdType = cmdType
+                      Variables = args
+                      Type = getType token }
+                )
+            | Error e -> Error e
 
 
 let interpretTokens (tokens: string list) (variables: FileInfo list) : CmdInfo list * string list =

@@ -53,7 +53,10 @@ let GetVariableArgs_WillGetMatchingVariables () =
           { Content = [| "some content" |]
             FileName = "var2" } ]
 
-    let result = getVariableArgs cmdStr variables
+    let result =
+        match getVariableArgs cmdStr variables with
+        | Ok result -> result
+        | Error _ -> failwith "error"
 
     let expected =
         [ { Content = [| "some content" |]
@@ -62,7 +65,7 @@ let GetVariableArgs_WillGetMatchingVariables () =
     Assert.That(result, Is.EquivalentTo(expected))
 
 [<Test>]
-let GetVariableArgs_WillReturnEmptyListIfNoMatches () =
+let GetVariableArgs_WillReturnErrorIfNoMatches () =
     let cmdStr = "#var3[command()]<string>#"
 
     let variables =
@@ -71,20 +74,25 @@ let GetVariableArgs_WillReturnEmptyListIfNoMatches () =
           { Content = [| "some content" |]
             FileName = "var2" } ]
 
-    let result = getVariableArgs cmdStr variables
+    let result =
+        match getVariableArgs cmdStr variables with
+        | Ok _ -> "Ok!"
+        | Error _ -> "error"
 
-    let expected = []
-
-    Assert.That(result, Is.EquivalentTo(expected))
+    Assert.That(result, Is.EqualTo("error"))
 
 [<Test>]
-let GetVariableArgs_WillReturnEmptyArray_WithEmptyVariablesInput () =
+let GetVariableArgs_WillReturnError_OnEmptyVariableInput () =
     let cmdStr = "#var3[command()]<string>#"
     let variables = []
-    let result = getVariableArgs cmdStr variables
-    let expected = []
 
-    Assert.That(result, Is.EquivalentTo(expected))
+    let result =
+        match getVariableArgs cmdStr variables with
+        | Ok _ -> failwith "ok"
+        | Error _ -> "error"
+
+
+    Assert.That(result, Is.EqualTo("error"))
 
 [<Test>]
 let GetCmdArgs_WillReturnArgList () =
@@ -126,7 +134,7 @@ let GetCmdType_WillGetWhereList () =
 
 [<Test>]
 let GetCmdType_WillGetWhereZip () =
-    let cmdStr = "#var[WhereZip()]<string>#"
+    let cmdStr = "#var[FlexZip()]<string>#"
     let result = getCmdType cmdStr
     Assert.That(result, Is.EqualTo(Some FlexZip))
 
