@@ -15,7 +15,7 @@ let private getFile (filePath: string) : Result<FileInfo, string> =
         <| { Content = (File.ReadAllLines filePath)
              FileName = fileName }
     with
-    | :? System.Exception as _-> Error $"Problem reading file at path: {filePath}"
+    | :? System.Exception -> Error $"Problem reading file at path: {filePath}"
 
 
 
@@ -27,7 +27,7 @@ let getFilesFrom (directoryPath: string) : Result<FileInfo list, string> =
                 <| Path.GetFullPath directoryPath
             )
         with
-        | :? System.Exception as _ -> Error $"Problem reading directory at: {directoryPath}"
+        | :? System.Exception -> Error $"Problem reading directory at: {directoryPath}"
 
     match ioResults with
     | Ok result ->
