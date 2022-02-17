@@ -32,7 +32,7 @@ let getTokensFromStr (str: string) =
     let hasOddNumberOfHashes = (fun (x: 'a list) -> x.Length % 2 <> 0)
 
     match hashIndexes with
-    | i when i |> hasOddNumberOfHashes -> Error "Unclosed hash in token: could not parse"
+    | i when i |> hasOddNumberOfHashes -> Error $"Unclosed hash in token, could not parse\n '{str}'"
     | i ->
         let indexPairs = getHashIndexPairs i
         let tokens = str |> getTokensUsing indexPairs
