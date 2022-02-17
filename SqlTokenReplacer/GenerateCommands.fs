@@ -4,6 +4,10 @@ open SqlTokenReplacer.Types
 
 type VariableParser = FileInfo list * CmdInfo -> string
 
+(*
+Each command must create its own variable parsing function of 'FileInfo list * CmdInfo -> string'
+This is passed to the generator and used to generate the command's function 
+*)
 let getTypeStr type_ =
     match type_ with
     | "string" -> "'"
