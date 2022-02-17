@@ -44,6 +44,14 @@ let CheckCommandSyntax_WillRejectMultipleCommands () =
     Assert.That(result, Is.False)
 
 [<Test>]
+let CheckCommandSyntax_AcceptUnderScoresInVariables () =
+    let input =
+        "#var1[command_1,command_2(arg1,arg2)]<int>#"
+
+    let result = commandSyntaxIsOk input
+    Assert.That(result, Is.False)
+
+[<Test>]
 let GetVariableArgs_WillGetMatchingVariables () =
     let cmdStr = "#var[command()]<string>#"
 

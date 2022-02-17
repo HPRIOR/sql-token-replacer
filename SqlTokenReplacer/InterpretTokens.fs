@@ -58,7 +58,7 @@ let getType (token: string) : string = token |> getBetween '<' '>'
 let commandSyntaxIsOk cmdStr : bool =
     Regex.IsMatch(
         cmdStr,
-        "^#[A-Za-z0-9]+(,\s*[A-Za-z0-9]+)*\[[A-Za-z0-9]+\([A-Za-z0-9]*(,\s*[A-Za-z0-9]+)*\)\]<[A-Za-z0-9]*>#$"
+        "^#[A-Za-z0-9_]+(,*[A-Za-z0-9_]+)*\[[A-Za-z0-9]+\([A-Za-z0-9]*(,*[A-Za-z0-9]+)*\)\]<[A-Za-z0-9]*>#$"
     )
 
 (*
