@@ -34,14 +34,14 @@ let main _ =
     
     
     let sqlFiles =
-        extractResultOrFail (getFilesFrom envVar["MODIFY"])
+        extractResultOrFail (getFilesFrom envVar.["MODIFY"])
 
     let variableFiles =
-        extractResultOrFail (getFilesFrom envVar["VARIABLES"])
+        extractResultOrFail (getFilesFrom envVar.["VARIABLES"])
         |> List.map removeFileExtensions
 
-    let outputDirectory = envVar["OUTPUTTO"]
-    let saveName = envVar["SAVEAS"]
+    let outputDirectory = envVar.["OUTPUTTO"]
+    let saveName = envVar.["SAVEAS"]
 
     let initTokens =
         extractResultOrFail (getCommandTokensFrom sqlFiles)
