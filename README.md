@@ -6,14 +6,15 @@ It requires a directory containing the input SQL files, and a series of 'query-v
 
 For example: 
 
+
 The input SQL, `get-data.sql`:
 ```
 SELECT * 
 FROM TABLE
-WHERE data IN (#datalist[list()]#)
+WHERE data IN (#datalist[List()]<int>#)
 ```
 
-The query-variable file, `datalist.txt`:
+and the query-variable file, `datalist.txt`:
 ```
 1
 2
@@ -22,7 +23,7 @@ The query-variable file, `datalist.txt`:
 5
 ```
 
-This will result in:
+will result in:
 
 ```
 SELECT * 
@@ -30,99 +31,128 @@ FROM TABLE
 WHERE data IN (1,2,3,4,5)
 ```
 
-The token, `#datalist[list()]#` has the syntax `#variables[command(args)]` and tells the program to look for `datalist.txt` and process each new line in that file as a comma seperated list. Multiple files can be used to provide query-variables if the command allows for it - this are seperated by commas: `#variables1,variables2[command]#`. Some commands can also be given arguments in brackats. In some commands, the name of the query-variable file will be used as part of the token replacement.
+The token, `#datalist[List()]<int>#` has the syntax `#variables[command(args)<type>]#` and 
+tells the program to look for `datalist.txt` in the variable directory and process each new line in that file 
+as a comma seperated list. Multiple files can be used to provide query-variables if the command allows for it - 
+this are seperated by commas: `#variables1,variables2[command(args)]<type>#`. 
+Some commands can also be given arguments in brackats. In some commands, the name of the query-variable file
+will be used as part of the token replacement.
 
-Various commands are available:
+#Commands
+Various commands are available - the examples assume there are files in the variable directory:
 
-
-`single`:
-
-Purpose:
-Injects the first line of the input file. 
-
-Args:
-None
-
-
-`all`:
-
-Purpose:
-Inject every line of the input file
-
-Args:
-None
-
-'list':
-
-Purpose:
-Injects a comma seperated list of all lines in the query-variable file.
-
-Args:
-None
-
-`where_list`
-
-Takes a single query-variable file and produces a where clause. Each line of the query-variable file will be used in conjection with the query-varaible file name to produce:
-
-```
-file_name in (1,2,3,4,5)
-```
-where file_name.txt contians:
-```
-1
-2
-3
-4
-5
-```
-
-Args:
-Can be provided a qualifer to prepend to the inserted `file_name`
-
-
-`where_zip`
-
-Purpose:
-Takes multiple query-variable files and zips their contents together into a 'where' clause. Each corresponding line of the query-variable files will be used in conjuction with the query-variable file name to produce: 
-
-```
-((file_name1 = line-1 AND file_name2 = line-1) OR
- (file_name1 = line-2 AND file_name2 = line-2) OR
- (file_name1 = line-3 AND file_name2 = line-3) OR
- ...
- (file_name1 = line-n AND file_name2 = line-n))
-
-```
-
-The output will only be as long as the shortest query-variable file.
-
-Args:
-Can be provided a list of qualifier names for each inserted file name
-
-Example: 
-
-`example.sql`
-```
-SELECT * FROM TABLE
-WHERE #data1,data2[where_zip(a,b)]#
-```
 `data1.txt`
 ```
 1
 2
-```
-
-`data2.txt`
-```
 3
 4
 ```
-
-output `example.sql`
+`data2.txt`
 ```
-SELECT * FROM TABLE 
-WHERE  ((a.data1 = 1 AND b.data2 = 3) OR
-        (a.data1 = 2 AND b.data2 = 4))
+5
+6
+7
+8
+```
+`data3.txt`
+```
+9 
+10
+```
+
+##Single
+
+###Purpose:
+
+Injects the first line of the variable file. 
+
+###Args: 
+
+None
+
+###Example:
+
+```
+#data1[Single()]<int># -> 1 
+
+#data1[Single()]<string># -> '1' 
+```
+
+
+##All
+
+###Purpose:
+
+Inject every line of the variable file
+
+###Args: 
+
+None
+
+###Example:
+
+```
+#data1[All()]<># -> 1
+                    2 
+                    3
+                    4
+```
+
+##List:
+
+###Purpose:
+
+Injects a comma seperated list of all lines in the variable file.
+
+###Args:
+
+None
+
+###Example
+```
+#data1[List()]<string># -> '1','2','3','4'
+                   
+```
+
+##WhereList
+
+###Purpose:
+
+Takes a single query-variable file and produces a where clause. Each line of the variable file will be used in conjunction with the variable file name.
+
+###Args:
+
+Can be provided a qualifier to prepend to the inserted variable file name
+
+###Example:
+
+
+```
+#data1[WhereList(arg)]<int># -> arg.data1 in (1,2,3,4)
+                   
+```
+
+##FlexZip
+
+###Purpose:
+Takes two query-variable files and zips their contents together into a 'where' clause. 
+If the two query-variable files contain an unequal number of items, then two separate where clauses will
+be produced
+
+###Args:
+Can be provided a list of qualifier names for each inserted file name
+
+###Example: 
+
+```
+#data1,data2[FlexZip(a,b)]<int># -> ((a.data1 = 1 and b.data2 = 5) OR
+                                     (a.data1 = 2 and b.data2 = 6) OR
+                                     (a.data1 = 3 and b.data2 = 7) OR
+                                     (a.data1 = 4 and b.data2 = 8))
+                                     
+#data1,data3[FlexZip(a,b)]<int># -> a.data1 in (1,2,3,4) AND 
+                                    b.data3 in (9,10)
 ```
 
 
