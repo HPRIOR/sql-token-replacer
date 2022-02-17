@@ -6,18 +6,31 @@ open SqlTokenReplacer.Utils
 
 
 let checkIfFilesAreIn path : Result<unit, string> =
-    let fileCount =
-        (Directory.EnumerateFiles(path) |> List.ofSeq)
-            .Length
+    let exists = Directory.Exists path
 
-    match fileCount with
-    | 0 -> Error $"No files found at: {path}"
-    | _ -> Ok()
+    if (not exists) then
+        Error $"No such directory at: {path}"
+    else
+        let fileCount =
+            (Directory.EnumerateFiles(path) |> List.ofSeq)
+                .Length
+
+        match fileCount with
+        | 0 -> Error $"No files found at: {path}"
+        | _ -> Ok()
+
+let checkDirectoryExists path : Result<unit, string> =
+    let directoryExists = Directory.Exists path
+
+    match directoryExists with
+    | true -> Ok()
+    | false -> Error $"No such directory at {path}"
 
 let checkEnvironmentVars (vars: Map<string, string>) : Result<Map<string, string>, string> =
     let checkResults =
         [ (checkIfFilesAreIn vars.["VARIABLES"])
-          (checkIfFilesAreIn vars.["MODIFY"]) ]
+          (checkIfFilesAreIn vars.["MODIFY"])
+          (checkDirectoryExists vars.["OUTPUTTO"]) ]
         |> collectResults
 
     match checkResults with
