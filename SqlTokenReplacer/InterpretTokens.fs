@@ -37,19 +37,19 @@ let getVariableArgs (token: string) (variables: FileInfo list) : Result<FileInfo
                 |> Array.exists (fun s -> s = variable.FileName))
 
     if (matchedVars.Length <> varsFromCmdStr.Length) then
-        let cmdStrVarsStr =
+        let cmdStrVarsCons =
             varsFromCmdStr
             |> Array.reduce (fun x y -> $"{x}, {y}")
 
-        let matchedVarsStr =
+        let matchedVarsCons =
             match matchedVars with
-            | [] -> ""
+            | [] -> "nothing"
             | _ ->
                 matchedVars
                 |> List.map (fun x -> x.FileName)
                 |> List.reduce (fun x y -> $"{x}, {y}")
 
-        Error $"Variable arguments not satisfied. Needed {cmdStrVarsStr}, but found: {matchedVarsStr}"
+        Error $"Variable arguments not satisfied for '{token}'. Needed {cmdStrVarsCons}, but found: {matchedVarsCons}"
     else
         Ok matchedVars
 
@@ -63,7 +63,7 @@ let commandSyntaxIsOk cmdStr : bool =
 
 (*
 To avoid lost of nested match cases, each 'get' function could return a new Result<Cmdinfo, string> or just CmdInfo.
-These could be chained together with bind and map, but would be less efficient 
+These could be chained together with bind and map, but would be less efficient
 *)
 let interpretToken (variables: FileInfo list) (token: string) : Result<CmdInfo, string> =
     if not (commandSyntaxIsOk token) then
