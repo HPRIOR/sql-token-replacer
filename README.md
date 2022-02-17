@@ -39,6 +39,7 @@ Some commands can also be given arguments in brackats. In some commands, the nam
 will be used as part of the token replacement.
 
 #Commands
+
 Various commands are available - the examples assume there are files in the variable directory:
 
 `data1.txt`
