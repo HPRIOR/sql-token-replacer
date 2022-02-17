@@ -155,7 +155,18 @@ Can be provided a list of qualifier names for each inserted file name
                                     b.data3 in (9,10)
 ```
 
+# Usage
 
+Public image is available. So just run:
+```bash
+ docker run  \
+    -v "/local/path/to/volume:/app/Volume" \
+    -e VARIABLES="Volume/path/to/variables/directory" \
+    -e MODIFY="Volume/path/to/files/containing/tokens" \
+    -e OUTPUTTO="Volume/path/to/output/directory" \
+    -e SAVEAS="name-of-directory-for-files-to-be-saved-in" \
+     --rm stewedharry/token-replacer                                  
+```
 
 
 
