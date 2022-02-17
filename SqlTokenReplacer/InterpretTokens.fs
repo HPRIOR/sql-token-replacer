@@ -67,7 +67,7 @@ These could be chained together with bind and map, but would be less efficient
 *)
 let interpretToken (variables: FileInfo list) (token: string) : Result<CmdInfo, string> =
     if not (commandSyntaxIsOk token) then
-        Error $"Syntax error in token: {token}.\nMust be in the form of: #variable[command(args)]#"
+        Error $"Syntax error in token: {token}.\nMust be in the form of: #variables[command(args)]<type>#"
     else
         let cmdType = getCmdType token
 
