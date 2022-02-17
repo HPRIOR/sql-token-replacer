@@ -31,8 +31,8 @@ let main _ =
         | Error e ->
             eprintf $"{e}"
             exit 1
-    
-    
+
+
     let sqlFiles =
         extractResultOrFail (getFilesFrom envVar.["MODIFY"])
 
@@ -61,10 +61,12 @@ let main _ =
         |> List.reduce (fun x y -> x >> y)
 
     let resultFiles = replaceTokens sqlFiles
-    
-    let outputDirectory = Path.Join([outputDirectory; saveName] |> List.toArray)
-    let saveResult = saveFiles resultFiles outputDirectory  
-    
+
+    let outputDirectory =
+        Path.Join([ outputDirectory; saveName ] |> List.toArray)
+
+    let saveResult = saveFiles resultFiles outputDirectory
+
     match saveResult with
     | Ok _ ->
         printf $"Results saved to: {outputDirectory}"

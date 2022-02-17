@@ -27,8 +27,7 @@ let flattenToCommaList type_ input =
     |> Array.map (fun x -> $"{t}{x}{t}")
     |> Array.reduce (fun x y -> $"{x},{y}")
 
-let singleParser (variables: FileInfo list, _: CmdInfo) =
-    variables.Head.Content.[0]
+let singleParser (variables: FileInfo list, _: CmdInfo) = variables.Head.Content.[0]
 
 // All
 let allParser (variables: FileInfo list, _: CmdInfo) =

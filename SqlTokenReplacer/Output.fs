@@ -30,12 +30,10 @@ let saveFilesTo directoryPath (files: FileInfo list) =
 let saveFiles (files: FileInfo list) path : Result<unit, string> =
     match tryCreateDirectoryAt path with
     | Ok _ ->
-        let collectedResults = (saveFilesTo path files) |> collectResults
+        let collectedResults =
+            (saveFilesTo path files) |> collectResults
+
         match collectedResults with
-        | Ok _ -> Ok ()
+        | Ok _ -> Ok()
         | Error e -> Error e
     | Error e -> Error e
-
-
-
-
